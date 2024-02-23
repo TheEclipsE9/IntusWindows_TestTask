@@ -3,9 +3,9 @@ using MyApp.Domain.Entities;
 
 namespace MyApp.Application.Services
 {
-    internal sealed class OrderService : IOrderService
+    public sealed class OrderService : IOrderService
     {
-        private ICollection<Order> _orders = new List<Order>
+        private static ICollection<Order> _orders = new List<Order>
         {
             new Order
             {
