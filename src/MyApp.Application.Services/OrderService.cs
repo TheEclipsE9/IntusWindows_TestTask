@@ -7,9 +7,26 @@ namespace MyApp.Application.Services
     public sealed class OrderService : IOrderService
     {
         private readonly IAppDbContext _dbContext;
+
         public OrderService(IAppDbContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public Order Get(int id)
+        {
+            var order = _dbContext.Orders.SingleOrDefault(x => x.Id == id);
+            if (order is null)
+            {
+                throw new ArgumentException();
+            }
+
+            return order;
+        }
+
+        public IEnumerable<Order> GetAll()
+        {
+            return _dbContext.Orders.ToList();
         }
 
         public void Create(Order order)
@@ -28,21 +45,6 @@ namespace MyApp.Application.Services
             }
             _dbContext.Orders.Remove(order);
             _dbContext.SaveChanges();
-        }
-
-        public Order Get(int id)
-        {
-            var order = _dbContext.Orders.SingleOrDefault(x => x.Id == id);
-            if (order is null)
-            {
-                throw new ArgumentException();
-            }
-            return order;
-        }
-
-        public IEnumerable<Order> GetAll()
-        {
-            return _dbContext.Orders.ToList();
         }
     }
 }

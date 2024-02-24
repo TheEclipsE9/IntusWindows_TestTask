@@ -6,9 +6,9 @@ namespace MyApp.Domain.Contracts.Application
     {
         SubElement Get(int id);
 
-        void Create(SubElement window);
+        void Create(SubElement subElement);
 
-        void Update(int id, SubElement window);
+        void Update(int id, SubElement subElement);
 
         void Delete(int id);
     }
