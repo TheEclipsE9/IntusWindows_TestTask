@@ -1,14 +1,14 @@
-﻿using MyApp.Domain.Entities;
+﻿using MyApp.Domain.Contracts.DTOs.Order;
 
 namespace MyApp.Domain.Contracts.Application
 {
     public interface IOrderService
     {
-        IEnumerable<Order> GetAll();
+        IEnumerable<OrderDTO> GetAll();
 
-        Order Get(int id);
+        OrderDTO Get(int id);
 
-        void Create(Order order);
+        void Create(CreateOrderDTO orderDTO);
 
         void Delete(int id);
     }

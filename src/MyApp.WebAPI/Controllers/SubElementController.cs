@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApp.Application.Services;
 using MyApp.Domain.Contracts.Application;
+using MyApp.Domain.Contracts.DTOs.SubElement;
 using MyApp.Domain.Entities;
 
 namespace MyApp.WebAPI.Controllers
@@ -25,17 +26,17 @@ namespace MyApp.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] SubElement subElement)
+        public IActionResult Create([FromBody] CreateSubElementDTO subElementDTO)
         {
-            _subElementService.Create(subElement);
+            _subElementService.Create(subElementDTO);
 
             return Ok();
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] SubElement subElement)
+        public IActionResult Update(int id, [FromBody] UpdateSubElementDTO subElementDTO)
         {
-            _subElementService.Update(id, subElement);
+            _subElementService.Update(id, subElementDTO);
 
             return Ok();
         }

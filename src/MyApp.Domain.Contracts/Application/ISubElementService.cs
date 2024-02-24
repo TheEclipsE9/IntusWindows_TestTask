@@ -1,14 +1,15 @@
-﻿using MyApp.Domain.Entities;
+﻿using MyApp.Domain.Contracts.DTOs.SubElement;
+using MyApp.Domain.Entities;
 
 namespace MyApp.Domain.Contracts.Application
 {
     public interface ISubElementService
     {
-        SubElement Get(int id);
+        SubElementDTO Get(int id);
 
-        void Create(SubElement subElement);
+        void Create(CreateSubElementDTO subElement);
 
-        void Update(int id, SubElement subElement);
+        void Update(int id, UpdateSubElementDTO subElement);
 
         void Delete(int id);
     }

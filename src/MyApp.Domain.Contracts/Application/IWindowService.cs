@@ -1,14 +1,15 @@
-﻿using MyApp.Domain.Entities;
+﻿using MyApp.Domain.Contracts.DTOs.Window;
+using MyApp.Domain.Entities;
 
 namespace MyApp.Domain.Contracts.Application
 {
     public interface IWindowService
     {
-        Window Get(int id);
+        WindowDTO Get(int id);
 
-        void Create(Window window);
+        void Create(CreateWindowDTO windowDTO);
 
-        void Update(int id, Window window);
+        void Update(int id, UpdateWindowDTO windowDTO);
 
         void Delete(int id);
     }

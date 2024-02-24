@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApp.Domain.Contracts.Application;
+using MyApp.Domain.Contracts.DTOs.Window;
 using MyApp.Domain.Entities;
 
 namespace MyApp.WebAPI.Controllers
@@ -24,17 +25,17 @@ namespace MyApp.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Window window)
+        public IActionResult Create([FromBody] CreateWindowDTO windowDTO)
         {
-            _windowService.Create(window);
+            _windowService.Create(windowDTO);
 
             return Ok();
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Window window)
+        public IActionResult Update(int id, [FromBody] UpdateWindowDTO windowDTO)
         {
-            _windowService.Update(id, window);
+            _windowService.Update(id, windowDTO);
 
             return Ok();
         }

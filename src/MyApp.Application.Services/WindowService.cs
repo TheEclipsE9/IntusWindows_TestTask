@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyApp.Domain.Contracts.Application;
+using MyApp.Domain.Contracts.DTOs.Window;
 using MyApp.Domain.Contracts.Infrastructure;
 using MyApp.Domain.Entities;
 
@@ -14,7 +15,7 @@ namespace MyApp.Application.Services
             _dbContext = dbContext;
         }
 
-        public Window Get(int id)
+        public WindowDTO Get(int id)
         {
             var window = _dbContext.Windows.SingleOrDefault(x => x.Id == id);
             if (window is null)
@@ -22,26 +23,46 @@ namespace MyApp.Application.Services
                 throw new ArgumentException();
             }
 
-            return window;
+            var windowDTO = new WindowDTO()
+            {
+                Id = window.Id,
+                Name = window.Name,
+                Quantity = window.Quantity,
+            };
+
+            return windowDTO;
         }
 
-        public void Create(Window window)
+        public void Create(CreateWindowDTO windowDTO)
         {
+            var order = _dbContext.Orders.SingleOrDefault(x => x.Id == windowDTO.OrderId);
+            if (order is null)
+            {
+                throw new ArgumentException();
+            }
+
+            var window = new Window()
+            {
+                Name = windowDTO.Name,
+                Quantity = windowDTO.Quantity,
+                OrderId = windowDTO.OrderId,
+            };
+
             _dbContext.Windows.Add(window);
 
             _dbContext.SaveChanges();
         }
 
-        public void Update(int id, Window window)
+        public void Update(int id, UpdateWindowDTO windowDTO)
         {
-            var dbWindow = _dbContext.Windows.SingleOrDefault(x => x.Id == id);
-            if (dbWindow is null)
+            var window = _dbContext.Windows.SingleOrDefault(x => x.Id == id);
+            if (window is null)
             {
                 throw new ArgumentException();
             }
 
-            dbWindow.Name = window.Name;
-            dbWindow.Quantity = window.Quantity;
+            window.Name = windowDTO.Name;
+            window.Quantity = windowDTO.Quantity;
 
             _dbContext.SaveChanges();
         }

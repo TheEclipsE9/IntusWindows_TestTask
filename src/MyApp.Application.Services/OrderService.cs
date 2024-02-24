@@ -1,4 +1,5 @@
 ﻿using MyApp.Domain.Contracts.Application;
+using MyApp.Domain.Contracts.DTOs.Order;
 using MyApp.Domain.Contracts.Infrastructure;
 using MyApp.Domain.Entities;
 
@@ -13,7 +14,7 @@ namespace MyApp.Application.Services
             _dbContext = dbContext;
         }
 
-        public Order Get(int id)
+        public OrderDTO Get(int id)
         {
             var order = _dbContext.Orders.SingleOrDefault(x => x.Id == id);
             if (order is null)
@@ -21,16 +22,37 @@ namespace MyApp.Application.Services
                 throw new ArgumentException();
             }
 
-            return order;
+            var orderDTO = new OrderDTO()
+            {
+                Id = order.Id,
+                Name = order.Name,
+                State = order.State,
+            };
+
+            return orderDTO;
         }
 
-        public IEnumerable<Order> GetAll()
+        public IEnumerable<OrderDTO> GetAll()
         {
-            return _dbContext.Orders.ToList();
+            var orders = _dbContext.Orders
+                .Select(order=> new OrderDTO
+                {
+                    Id= order.Id,
+                    Name = order.Name,
+                    State = order.State,
+                });
+
+            return orders;
         }
 
-        public void Create(Order order)
+        public void Create(CreateOrderDTO orderDTO)
         {
+            var order = new Order()
+            {
+                Name = orderDTO.Name,
+                State = orderDTO.State,
+            };
+
             _dbContext.Orders.Add(order);
 
             _dbContext.SaveChanges();

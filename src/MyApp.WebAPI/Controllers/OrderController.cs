@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApp.Domain.Contracts.Application;
+using MyApp.Domain.Contracts.DTOs.Order;
 using MyApp.Domain.Entities;
 
 namespace MyApp.WebAPI.Controllers
@@ -32,9 +33,9 @@ namespace MyApp.WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Order order)
+        public IActionResult Create([FromBody] CreateOrderDTO orderDTO)
         {
-            _orderService.Create(order);
+            _orderService.Create(orderDTO);
 
             return Ok();
         }

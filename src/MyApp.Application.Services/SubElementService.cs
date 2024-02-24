@@ -1,4 +1,5 @@
 ﻿using MyApp.Domain.Contracts.Application;
+using MyApp.Domain.Contracts.DTOs.SubElement;
 using MyApp.Domain.Contracts.Infrastructure;
 using MyApp.Domain.Entities;
 
@@ -13,7 +14,7 @@ namespace MyApp.Application.Services
             _dbContext = dbContext;
         }
 
-        public SubElement Get(int id)
+        public SubElementDTO Get(int id)
         {
             var subElement = _dbContext.SubElements.SingleOrDefault(x => x.Id == id);
             if (subElement is null)
@@ -21,27 +22,48 @@ namespace MyApp.Application.Services
                 throw new ArgumentException();
             }
 
-            return subElement;
+            var subElementDTO = new SubElementDTO()
+            {
+                Id = subElement.Id,
+                Type = subElement.Type,
+                Width = subElement.Width,
+                Height = subElement.Height,
+            };
+
+            return subElementDTO;
         }
 
-        public void Create(SubElement subElement)
+        public void Create(CreateSubElementDTO subElementDTO)
         {
+            var window = _dbContext.Windows.SingleOrDefault(x => x.Id == subElementDTO.WindowId);
+            if (window is null)
+            {
+                throw new ArgumentException();
+            }
+            var subElement = new SubElement()
+            {
+                Type = subElementDTO.Type,
+                Width = subElementDTO.Width,
+                Height = subElementDTO.Height,
+                WindowId = subElementDTO.WindowId
+            };
+
             _dbContext.SubElements.Add(subElement);
 
             _dbContext.SaveChanges();
         }
 
-        public void Update(int id, SubElement subElement)
+        public void Update(int id, UpdateSubElementDTO subElementDTO)
         {
-            var dbSubElement = _dbContext.SubElements.SingleOrDefault(x => x.Id == id);
-            if (dbSubElement is null)
+            var subElement = _dbContext.SubElements.SingleOrDefault(x => x.Id == id);
+            if (subElement is null)
             {
                 throw new ArgumentException();
             }
 
-            dbSubElement.Type = subElement.Type;
-            dbSubElement.Width = subElement.Width;
-            dbSubElement.Height = subElement.Height;
+            subElement.Type = subElementDTO.Type;
+            subElement.Width = subElementDTO.Width;
+            subElement.Height = subElementDTO.Height;
 
             _dbContext.SaveChanges();
         }
@@ -51,7 +73,7 @@ namespace MyApp.Application.Services
             var subElement = _dbContext.SubElements.SingleOrDefault(x => x.Id == id);
             if (subElement is null)
             {
-                throw new ArgumentException();
+                return;
             }
 
             _dbContext.SubElements.Remove(subElement);
