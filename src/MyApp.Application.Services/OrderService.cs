@@ -1,43 +1,38 @@
 ﻿using MyApp.Domain.Contracts.Application;
+using MyApp.Domain.Contracts.Infrastructure;
 using MyApp.Domain.Entities;
 
 namespace MyApp.Application.Services
 {
     public sealed class OrderService : IOrderService
     {
-        private static ICollection<Order> _orders = new List<Order>
+        private readonly IAppDbContext _dbContext;
+        public OrderService(IAppDbContext dbContext)
         {
-            new Order
-            {
-                Id = 1, Name = "Test 1", State = "NY", Windows = Enumerable.Empty<Window>().ToList()
-            },
-            new Order
-            {
-                Id = 2, Name = "Test 2", State = "WS", Windows = new List<Window>
-                {
-                    new Window { Id = 1, Name = "Window", Quantity = 3, SubElements = Enumerable.Empty<SubElement>().ToList(), OrderId = 1 },
-                }
-            }
-        };
+            _dbContext = dbContext;
+        }
 
         public void Create(Order order)
         {
-            _orders.Add(order);
+            _dbContext.Orders.Add(order);
+
+            _dbContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            var order = _orders.SingleOrDefault(x => x.Id == id);
+            var order = _dbContext.Orders.SingleOrDefault(x => x.Id == id);
             if (order is null)
             {
                 return;
             }
-            _orders.Remove(order);
+            _dbContext.Orders.Remove(order);
+            _dbContext.SaveChanges();
         }
 
         public Order Get(int id)
         {
-            var order = _orders.SingleOrDefault(x => x.Id == id);
+            var order = _dbContext.Orders.SingleOrDefault(x => x.Id == id);
             if (order is null)
             {
                 throw new ArgumentException();
@@ -47,7 +42,7 @@ namespace MyApp.Application.Services
 
         public IEnumerable<Order> GetAll()
         {
-            return _orders;
+            return _dbContext.Orders.ToList();
         }
     }
 }
