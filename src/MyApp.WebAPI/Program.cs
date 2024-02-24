@@ -1,10 +1,13 @@
 using MyApp.Domain.Contracts.Application;
 using MyApp.Application.Services;
+using MyApp.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.ConfigureData(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
