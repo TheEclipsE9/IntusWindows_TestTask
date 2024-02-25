@@ -29,7 +29,7 @@ else
                 <tr>
                     <th scope="col">Id</th>
                     <th scope="col">Name</th>
-                    <th scope="col">State</th>
+                    <th scope="col">Quantity</th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
@@ -44,7 +44,7 @@ else
                             <button type="button" class="btn btn-outline-primary btn-sm">
                                 Details
                             </button>
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <button @onclick="() => DeleteWindowAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
                                 Delete
                             </button>
                         </td>
@@ -70,5 +70,20 @@ else
 
         WindowDTOs = await _httpClient.GetFromJsonAsync<List<WindowDTO>>($"https://localhost:7147/Window/by-order/{_id}");
         Console.WriteLine($"Recieve windows: {WindowDTOs.Count}");
+    }
+
+    private async Task DeleteWindowAsync(WindowDTO window)
+    {
+        Console.WriteLine($"DeleteOrder: {window.Id}");
+        var response = await _httpClient.DeleteAsync($"https://localhost:7147/Window/{window.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            WindowDTOs.Remove(window);
+            Console.WriteLine("Success");
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
     }
 }
