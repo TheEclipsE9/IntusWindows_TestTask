@@ -1,0 +1,40 @@
+﻿@page "/Order/{_id:int}"
+
+@inject HttpClient _httpClient
+
+<!---->
+@if (_orderDTO is null)
+{
+    <div>
+        Loading...
+    </div>
+}
+else
+{
+    <div class="align-items-center">
+        <div>
+            Id: @_orderDTO.Id
+        </div>
+        <div>
+            Name: @_orderDTO.Name
+        </div>
+        <div>
+            State: @_orderDTO.State
+        </div>
+    </div>
+
+}
+
+@code {
+    [Parameter]
+    public int _id { get; set; }
+
+    private OrderDTO _orderDTO { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _orderDTO = await _httpClient.GetFromJsonAsync<OrderDTO>($"https://localhost:7147/Order/{_id}");
+        Console.WriteLine($"_orderDTO {_orderDTO.Id}, {_orderDTO.Name}, {_orderDTO.State}");
+        StateHasChanged();
+    }
+}

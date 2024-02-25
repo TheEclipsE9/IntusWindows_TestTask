@@ -1,17 +1,20 @@
 ﻿@page "/"
 
 @inject HttpClient _httpClient
+@inject NavigationManager _navigationManager
 
 <!---->
-
 @if (_showCreateOrder)
 {
-    <CreateOrder OnClickButtonClose="() => _showCreateOrder = false"/>
+    <CreateOrder OnClickButtonClose="() => _showCreateOrder = false" />
 }
 
-<button type="button" @onclick="() => _showCreateOrder = true" class="btn btn-primary ">
-    Create order
-</button>
+<div class="text-center my-3">
+    <button type="button" @onclick="() => _showCreateOrder = true" class="btn btn-primary">
+        Create order
+    </button>
+</div>
+
 
 <div class="table-responsive">
     <table class="table table-striped">
@@ -31,7 +34,7 @@
                     <td>@item.Name</td>
                     <td>@item.State</td>
                     <td>
-                        <button type="button" class="btn btn-outline-primary btn-sm">
+                        <button @onclick="() => NavigateToOrder(item)" type=" button" class="btn btn-outline-primary btn-sm">
                             Details
                         </button>
                         <button type="submit" class="btn btn-outline-danger btn-sm">
@@ -40,7 +43,7 @@
                     </td>
                 </tr>
             }
-            
+
         </tbody>
     </table>
 </div>
@@ -52,5 +55,10 @@
     protected override async Task OnInitializedAsync()
     {
         Orders = await _httpClient.GetFromJsonAsync<List<OrderDTO>>("https://localhost:7147/Order");
+    }
+
+    private void NavigateToOrder(OrderDTO order)
+    {
+        _navigationManager.NavigateTo($"Order/{order.Id}");
     }
 }
