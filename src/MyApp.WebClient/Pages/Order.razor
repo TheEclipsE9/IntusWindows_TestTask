@@ -3,7 +3,7 @@
 @inject HttpClient _httpClient
 
 <!---->
-@if (_orderDTO is null)
+@if (OrderDTO is null)
 {
     <div>
         Loading...
@@ -13,14 +13,45 @@ else
 {
     <div class="align-items-center">
         <div>
-            Id: @_orderDTO.Id
+            Id: @OrderDTO.Id
         </div>
         <div>
-            Name: @_orderDTO.Name
+            Name: @OrderDTO.Name
         </div>
         <div>
-            State: @_orderDTO.State
+            State: @OrderDTO.State
         </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in WindowDTOs)
+                {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-primary btn-sm">
+                                Details
+                            </button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 
 }
@@ -29,12 +60,15 @@ else
     [Parameter]
     public int _id { get; set; }
 
-    private OrderDTO _orderDTO { get; set; }
+    private OrderDTO OrderDTO { get; set; }
+    private List<WindowDTO> WindowDTOs { get; set; } = new List<WindowDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        _orderDTO = await _httpClient.GetFromJsonAsync<OrderDTO>($"https://localhost:7147/Order/{_id}");
-        Console.WriteLine($"_orderDTO {_orderDTO.Id}, {_orderDTO.Name}, {_orderDTO.State}");
-        StateHasChanged();
+        OrderDTO = await _httpClient.GetFromJsonAsync<OrderDTO>($"https://localhost:7147/Order/{_id}");
+        Console.WriteLine($"_orderDTO {OrderDTO.Id}, {OrderDTO.Name}, {OrderDTO.State}");
+
+        WindowDTOs = await _httpClient.GetFromJsonAsync<List<WindowDTO>>($"https://localhost:7147/Window/by-order/{_id}");
+        Console.WriteLine($"Recieve windows: {WindowDTOs.Count}");
     }
 }
