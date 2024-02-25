@@ -12,8 +12,8 @@ namespace MyApp.Infrastructure.Data.Configurations
 
             builder.HasKey(window => window.Id);
 
-            builder.Property(window => window.Name);
-            builder.Property(window => window.Quantity);
+            builder.Property(window => window.Name).IsRequired();
+            builder.Property(window => window.Quantity).IsRequired();
 
             builder.HasOne(window => window.Order)
                 .WithMany(order => order.Windows)

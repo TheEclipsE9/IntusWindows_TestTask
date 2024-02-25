@@ -12,9 +12,9 @@ namespace MyApp.Infrastructure.Data.Configurations
 
             builder.HasKey(subElement => subElement.Id);
 
-            builder.Property(subElement => subElement.Type);
-            builder.Property(subElement => subElement.Width);
-            builder.Property(subElement => subElement.Height);
+            builder.Property(subElement => subElement.Type).IsRequired();
+            builder.Property(subElement => subElement.Width).IsRequired();
+            builder.Property(subElement => subElement.Height).IsRequired();
 
             builder.HasOne(subElement => subElement.Window)
                 .WithMany(window => window.SubElements)

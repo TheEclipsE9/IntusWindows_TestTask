@@ -12,8 +12,8 @@ namespace MyApp.Infrastructure.Data.Configurations
 
             builder.HasKey(order => order.Id);
 
-            builder.Property(order => order.Name);
-            builder.Property(order => order.State);
+            builder.Property(order => order.Name).IsRequired();
+            builder.Property(order => order.State).IsRequired();
 
             builder.HasMany(order => order.Windows)
                 .WithOne(window => window.Order)
