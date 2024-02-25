@@ -23,12 +23,20 @@ else
             State: @OrderDTO.State
         </div>
     </div>
+    @if (_showUpdateOrder)
+    {
+        <UpdateOrder Order="@OrderDTO" OnClickButtonClose="() => _showUpdateOrder = false" />
+    }
+    <div>
+        <button @onclick="() => _showUpdateOrder = true" type="button" class="btn btn-outline-warning btn-sm">
+            Edit
+        </button>
+    </div>
 
     @if (_showCreateWindows)
     {
         <CreateWindow OrderId="_id" OnWindowCreated="(createdWindow) => HandleOnCreated(createdWindow)" OnClickButtonClose="() => _showCreateWindows = false" />
     }
-
     <div class="text-center my-3">
         <button type="button" @onclick="() => _showCreateWindows = true" class="btn btn-primary">
             Create window
@@ -75,6 +83,7 @@ else
     private OrderDTO OrderDTO { get; set; }
     private List<WindowDTO> WindowDTOs { get; set; } = new List<WindowDTO>();
     private bool _showCreateWindows = false;
+    private bool _showUpdateOrder = false;
 
     protected override async Task OnInitializedAsync()
     {
