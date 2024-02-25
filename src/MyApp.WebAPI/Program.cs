@@ -1,6 +1,8 @@
 using MyApp.Domain.Contracts.Application;
 using MyApp.Application.Services;
 using MyApp.Infrastructure.Data;
+using MyApp.Domain.Contracts.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,4 +47,27 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await InitializeDataBase();
+
 app.Run();
+
+async Task InitializeDataBase()
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    try
+    {
+        Console.WriteLine("Applying migration...");
+        await context.Database.MigrateAsync();
+        Console.WriteLine("Migration applied successfully.");
+
+        Console.WriteLine("Seeding database...");
+        SeedData.Seed(context);
+        Console.WriteLine("Seeding completed.");
+    }
+    catch (Exception e)
+    {
+        throw;
+    }
+}
