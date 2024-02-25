@@ -9,15 +9,15 @@
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Create order</h1>
                 <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn-close" aria-label="Close"></button>
             </div>
-            <EditForm Model="_createOrderDTO" OnValidSubmit="CreateOrderAsync">
+            <EditForm Model="_createWindowDTO" OnValidSubmit="CreateWindowAsync">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="Name" class="form-label">Name</label>
-                        <InputText @bind-Value="_createOrderDTO.Name" class="form-control" id="Name" />
+                        <InputText @bind-Value="_createWindowDTO.Name" class="form-control" id="Name" />
                     </div>
                     <div class="mb-3">
-                        <label for="State" class="form-label">State</label>
-                        <InputText @bind-Value="_createOrderDTO.State" class="form-control" id="State" />
+                        <label for="Quantity" class="form-label">Quantity</label>
+                        <InputNumber @bind-Value="_createWindowDTO.Quantity" class="form-control" id="Quantity" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -29,34 +29,41 @@
     </div>
 </div>
 
-
 @code {
-
+    [Parameter]
+    public int OrderId { get; set; }
     [Parameter]
     public EventCallback OnClickButtonClose { get; set; }
     [Parameter]
-    public EventCallback<OrderDTO> OnOrderCreated { get; set; }
+    public EventCallback<WindowDTO> OnWindowCreated { get; set; }
 
-    private CreateOrderDTO _createOrderDTO = new CreateOrderDTO()
-    {
-        Name = "",
-        State = ""
-    };
+    private CreateWindowDTO _createWindowDTO;
+    
 
-    private async Task CreateOrderAsync()
+    protected override void OnInitialized()
     {
-        Console.WriteLine($"CreateOrderAsync: {_createOrderDTO.Name}; {_createOrderDTO.State}");
-        var response = await _httpClient.PostAsJsonAsync<CreateOrderDTO>("https://localhost:7147/Order", _createOrderDTO);
+        _createWindowDTO = new CreateWindowDTO()
+        {
+            Name = "",
+            Quantity = 0,
+            OrderId = OrderId
+        };
+    }
+
+    private async Task CreateWindowAsync()
+    {
+        Console.WriteLine($"CreateOrderAsync: {_createWindowDTO.Name}; {_createWindowDTO.Quantity}");
+        var response = await _httpClient.PostAsJsonAsync<CreateWindowDTO>("https://localhost:7147/Window", _createWindowDTO);
         if (response.IsSuccessStatusCode)
         {
-            var created = await response.Content.ReadFromJsonAsync<OrderDTO>();
+            var created = await response.Content.ReadFromJsonAsync<WindowDTO>();
             if (created is null)
             {
                 Console.WriteLine("Created is null");
             }
             else
             {
-                await OnOrderCreated.InvokeAsync(created);
+                await OnWindowCreated.InvokeAsync(created);
                 Console.WriteLine("Success");
             }
         }

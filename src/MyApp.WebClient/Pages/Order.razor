@@ -23,6 +23,17 @@ else
         </div>
     </div>
 
+    @if (_showCreateWindows)
+    {
+        <CreateWindow OrderId="_id" OnWindowCreated="(createdWindow) => HandleOnCreated(createdWindow)" OnClickButtonClose="() => _showCreateWindows = false" />
+    }
+
+    <div class="text-center my-3">
+        <button type="button" @onclick="() => _showCreateWindows = true" class="btn btn-primary">
+            Create order
+        </button>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -62,6 +73,7 @@ else
 
     private OrderDTO OrderDTO { get; set; }
     private List<WindowDTO> WindowDTOs { get; set; } = new List<WindowDTO>();
+    private bool _showCreateWindows = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,5 +97,10 @@ else
         {
             Console.WriteLine("Failed");
         }
+    }
+
+    private void HandleOnCreated(WindowDTO window)
+    {
+        WindowDTOs.Add(window);
     }
 }
