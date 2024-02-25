@@ -31,6 +31,11 @@ else
         </button>
     </div>
 
+    @if (_showUpdateSubElement && _toUpdateSubElement is not null)
+    {
+        <UpdateSubElement SubElement="_toUpdateSubElement" OnClickButtonClose="() => _showUpdateSubElement = false" />
+    }
+
     @if (_showCreateSubElement)
     {
         <CreateSubElement WindowId="_id" OnSubElementCreated="(subElement) => HandleOnCreated(subElement)" OnClickButtonClose="() => _showCreateSubElement = false" />
@@ -40,7 +45,6 @@ else
             Create sub element
         </button>
     </div>
-
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -61,6 +65,9 @@ else
                         <td>@item.Width</td>
                         <td>@item.Height</td>
                         <td>
+                            <button @onclick="() => {_showUpdateSubElement = true; _toUpdateSubElement = item; }" type="submit" class="btn btn-warning btn-sm">
+                                Edit
+                            </button>
                             <button @onclick="() => DeleteSubElementAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
                                 Delete
                             </button>
@@ -80,6 +87,9 @@ else
     private List<SubElementDTO> SubElementDTOs { get; set; } = new List<SubElementDTO>();
     private bool _showCreateSubElement = false;
     private bool _showUpdateWindow = false;
+    private bool _showUpdateSubElement = false;
+
+    private SubElementDTO _toUpdateSubElement;
 
     protected override async Task OnInitializedAsync()
     {

@@ -6,14 +6,14 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Create order</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Update order</h1>
                 <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn-close" aria-label="Close"></button>
             </div>
-            <EditForm Model="_createSubElementDTO" OnValidSubmit="CreateSubElementAsync">
+            <EditForm Model="_updateSubElementDTO" OnValidSubmit="UpdateSubElementAsync">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="Type" class="form-label">Type</label>
-                        <InputSelect @bind-Value="_createSubElementDTO.Type" class="form-select" id="Type">
+                        <InputSelect @bind-Value="_updateSubElementDTO.Type" class="form-select" id="Type">
                             @foreach (var type in Enum.GetValues(typeof(SubElementType)))
                             {
                                 <option value="@type">@type</option>
@@ -22,57 +22,58 @@
                     </div>
                     <div class="mb-3">
                         <label for="Width" class="form-label">Width</label>
-                        <InputNumber @bind-Value="_createSubElementDTO.Width" class="form-control" id="Width" />
+                        <InputNumber @bind-Value="_updateSubElementDTO.Width" class="form-control" id="Width" />
                     </div>
                     <div class="mb-3">
                         <label for="Height" class="form-label">Height</label>
-                        <InputNumber @bind-Value="_createSubElementDTO.Height" class="form-control" id="Height" />
+                        <InputNumber @bind-Value="_updateSubElementDTO.Height" class="form-control" id="Height" />
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn btn-secondary">Close</button>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </EditForm>
         </div>
     </div>
 </div>
 
+
 @code {
     [Parameter]
-    public int WindowId { get; set; }
+    public SubElementDTO SubElement { get; set; }
+
     [Parameter]
     public EventCallback OnClickButtonClose { get; set; }
-    [Parameter]
-    public EventCallback<SubElementDTO> OnSubElementCreated { get; set; }
 
-    private CreateSubElementDTO _createSubElementDTO;
+    private UpdateSubElementDTO _updateSubElementDTO;
 
     protected override void OnInitialized()
     {
-        _createSubElementDTO = new CreateSubElementDTO()
+        _updateSubElementDTO = new UpdateSubElementDTO()
             {
-                Type = SubElementType.Doors,
-                Width = 0,
-                Height = 0,
-                WindowId = WindowId
+                Type = SubElement.Type,
+                Width = SubElement.Width,
+                Height = SubElement.Height
             };
     }
 
-    private async Task CreateSubElementAsync()
+    private async Task UpdateSubElementAsync()
     {
-        Console.WriteLine($"CreateOrderAsync: {_createSubElementDTO.Type}; {_createSubElementDTO.Width}; {_createSubElementDTO.Height}");
-        var response = await _httpClient.PostAsJsonAsync<CreateSubElementDTO>("https://localhost:7147/SubElement", _createSubElementDTO);
+        Console.WriteLine($"UpdateWindowAsync: {_updateSubElementDTO.Type}; {_updateSubElementDTO.Width}; {_updateSubElementDTO.Height}");
+        var response = await _httpClient.PutAsJsonAsync<UpdateSubElementDTO>($"https://localhost:7147/SubElement/{SubElement.Id}", _updateSubElementDTO);
         if (response.IsSuccessStatusCode)
         {
-            var created = await response.Content.ReadFromJsonAsync<SubElementDTO>();
-            if (created is null)
+            var updated = await response.Content.ReadFromJsonAsync<UpdateSubElementDTO>();
+            if (updated is null)
             {
-                Console.WriteLine("Created is null");
+                Console.WriteLine("Updated is null");
             }
             else
             {
-                await OnSubElementCreated.InvokeAsync(created);
+                SubElement.Type = updated.Type;
+                SubElement.Width = updated.Width;
+                SubElement.Height = updated.Height;
                 Console.WriteLine("Success");
             }
         }
