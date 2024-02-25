@@ -2,11 +2,11 @@
 
 <!---->
 
-<div class="modal fade show d-block" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade show d-block bg-black-l" id="staticBackdrop bg-black-l" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Create order</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Create window</h1>
                 <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn-close" aria-label="Close"></button>
             </div>
             <EditForm Model="_createWindowDTO" OnValidSubmit="CreateWindowAsync">
@@ -19,6 +19,9 @@
                         <label for="Quantity" class="form-label">Quantity</label>
                         <InputNumber @bind-Value="_createWindowDTO.Quantity" class="form-control" id="Quantity" />
                     </div>
+
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
                 </div>
                 <div class="modal-footer">
                     <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn btn-secondary">Close</button>

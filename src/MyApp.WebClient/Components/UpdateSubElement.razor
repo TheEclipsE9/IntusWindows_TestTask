@@ -2,7 +2,7 @@
 
 <!---->
 
-<div class="modal fade show d-block" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade show d-block bg-black-l" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -28,6 +28,9 @@
                         <label for="Height" class="form-label">Height</label>
                         <InputNumber @bind-Value="_updateSubElementDTO.Height" class="form-control" id="Height" />
                     </div>
+
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
                 </div>
                 <div class="modal-footer">
                     <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn btn-secondary">Close</button>

@@ -1,7 +1,12 @@
 h1:focus {
     outline: none;
 }
-
+.bg-black-l{
+    background: rgba(0, 0, 0, 0.3);
+}
+.validation-message {
+    color: tomato;
+}
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
