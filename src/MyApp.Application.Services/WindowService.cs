@@ -33,6 +33,21 @@ namespace MyApp.Application.Services
             return windowDTO;
         }
 
+        public List<WindowDTO> GetAllByOrderId(int orderId)
+        {
+            var windows = _dbContext.Windows
+                .Where(x=>x.OrderId == orderId)
+                .Select(x=> new WindowDTO()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Quantity = x.Quantity,
+                })
+                .ToList();
+
+            return windows;
+        }
+
         public void Create(CreateWindowDTO windowDTO)
         {
             var order = _dbContext.Orders.SingleOrDefault(x => x.Id == windowDTO.OrderId);

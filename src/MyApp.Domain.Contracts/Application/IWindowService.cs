@@ -7,6 +7,8 @@ namespace MyApp.Domain.Contracts.Application
     {
         WindowDTO Get(int id);
 
+        List<WindowDTO> GetAllByOrderId(int orderId);
+
         void Create(CreateWindowDTO windowDTO);
 
         void Update(int id, UpdateWindowDTO windowDTO);
