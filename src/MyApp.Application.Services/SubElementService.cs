@@ -1,6 +1,5 @@
 ﻿using MyApp.Domain.Contracts.Application;
 using MyApp.Domain.Contracts.DTOs.SubElement;
-using MyApp.Domain.Contracts.DTOs.Window;
 using MyApp.Domain.Contracts.Infrastructure;
 using MyApp.Domain.Entities;
 
@@ -78,7 +77,7 @@ namespace MyApp.Application.Services
             };
         }
 
-        public void Update(int id, UpdateSubElementDTO subElementDTO)
+        public SubElementDTO Update(int id, UpdateSubElementDTO subElementDTO)
         {
             var subElement = _dbContext.SubElements.SingleOrDefault(x => x.Id == id);
             if (subElement is null)
@@ -91,6 +90,14 @@ namespace MyApp.Application.Services
             subElement.Height = subElementDTO.Height;
 
             _dbContext.SaveChanges();
+
+            return new SubElementDTO
+            {
+                Id = id,
+                Type = subElementDTO.Type,
+                Width = subElementDTO.Width,
+                Height = subElementDTO.Height,
+            };
         }
 
         public void Delete(int id)

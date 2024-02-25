@@ -45,9 +45,9 @@ namespace MyApp.WebAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UpdateSubElementDTO subElementDTO)
         {
-            _subElementService.Update(id, subElementDTO);
+            var updated = _subElementService.Update(id, subElementDTO);
 
-            return Ok();
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]

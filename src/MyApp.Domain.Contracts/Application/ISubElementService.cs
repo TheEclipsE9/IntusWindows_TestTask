@@ -1,5 +1,4 @@
 ﻿using MyApp.Domain.Contracts.DTOs.SubElement;
-using MyApp.Domain.Entities;
 
 namespace MyApp.Domain.Contracts.Application
 {
@@ -10,7 +9,7 @@ namespace MyApp.Domain.Contracts.Application
 
         SubElementDTO Create(CreateSubElementDTO subElement);
 
-        void Update(int id, UpdateSubElementDTO subElement);
+        SubElementDTO Update(int id, UpdateSubElementDTO subElement);
 
         void Delete(int id);
     }
