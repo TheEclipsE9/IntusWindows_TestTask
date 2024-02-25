@@ -6,7 +6,7 @@
 <!---->
 @if (_showCreateOrder)
 {
-    <CreateOrder OnClickButtonClose="() => _showCreateOrder = false" />
+    <CreateOrder OnOrderCreated="(createdOrder) => HandleOnOrderCreated(createdOrder)" OnClickButtonClose="() => _showCreateOrder = false" />
 }
 
 <div class="text-center my-3">
@@ -75,5 +75,10 @@
         {
             Console.WriteLine("Failed");
         }
+    }
+
+    private void HandleOnOrderCreated(OrderDTO order)
+    {
+        Orders.Add(order);
     }
 }

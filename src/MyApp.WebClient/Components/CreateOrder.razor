@@ -34,6 +34,8 @@
 
     [Parameter]
     public EventCallback OnClickButtonClose { get; set; }
+    [Parameter]
+    public EventCallback<OrderDTO> OnOrderCreated { get; set; }
 
     private CreateOrderDTO _createOrderDTO = new CreateOrderDTO()
         {
@@ -47,7 +49,16 @@
         var response = await _httpClient.PostAsJsonAsync<CreateOrderDTO>("https://localhost:7147/Order", _createOrderDTO);
         if (response.IsSuccessStatusCode)
         {
-            Console.WriteLine("Success");
+            var created = await response.Content.ReadFromJsonAsync<OrderDTO>();
+            if (created is null)
+            {
+                Console.WriteLine("Created is null");
+            }
+            else
+            {
+                await OnOrderCreated.InvokeAsync(created);
+                Console.WriteLine("Success");
+            }
         }
         else
         {
