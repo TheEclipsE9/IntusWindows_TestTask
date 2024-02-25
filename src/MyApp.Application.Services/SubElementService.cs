@@ -1,5 +1,6 @@
 ﻿using MyApp.Domain.Contracts.Application;
 using MyApp.Domain.Contracts.DTOs.SubElement;
+using MyApp.Domain.Contracts.DTOs.Window;
 using MyApp.Domain.Contracts.Infrastructure;
 using MyApp.Domain.Entities;
 
@@ -33,7 +34,23 @@ namespace MyApp.Application.Services
             return subElementDTO;
         }
 
-        public void Create(CreateSubElementDTO subElementDTO)
+        public List<SubElementDTO> GetAllByWindowId(int windowId)
+        {
+            var subElements = _dbContext.SubElements
+                .Where(x => x.WindowId == windowId)
+                .Select(x => new SubElementDTO()
+                {
+                    Id = x.Id,
+                    Type = x.Type,
+                    Width = x.Width,
+                    Height = x.Height,
+                })
+                .ToList();
+
+            return subElements;
+        }
+
+        public SubElementDTO Create(CreateSubElementDTO subElementDTO)
         {
             var window = _dbContext.Windows.SingleOrDefault(x => x.Id == subElementDTO.WindowId);
             if (window is null)
@@ -51,6 +68,14 @@ namespace MyApp.Application.Services
             _dbContext.SubElements.Add(subElement);
 
             _dbContext.SaveChanges();
+
+            return new SubElementDTO()
+            {
+                Id = subElement.Id,
+                Type = subElementDTO.Type,
+                Width = subElementDTO.Width,
+                Height = subElementDTO.Height,
+            };
         }
 
         public void Update(int id, UpdateSubElementDTO subElementDTO)

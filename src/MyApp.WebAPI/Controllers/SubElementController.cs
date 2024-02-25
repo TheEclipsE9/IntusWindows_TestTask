@@ -25,12 +25,21 @@ namespace MyApp.WebAPI.Controllers
             return Ok(subElement);
         }
 
+        [HttpGet]
+        [Route(("by-window/{windowId}"))]
+        public IActionResult GetAllByOrderId(int windowId)
+        {
+            var subElements = _subElementService.GetAllByWindowId(windowId);
+
+            return Ok(subElements);
+        }
+
         [HttpPost]
         public IActionResult Create([FromBody] CreateSubElementDTO subElementDTO)
         {
-            _subElementService.Create(subElementDTO);
+            var created = _subElementService.Create(subElementDTO);
 
-            return Ok();
+            return Ok(created);
         }
 
         [HttpPut("{id}")]
