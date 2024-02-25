@@ -8,7 +8,7 @@ namespace MyApp.Domain.Contracts.Application
 
         OrderDTO Get(int id);
 
-        void Create(CreateOrderDTO orderDTO);
+        OrderDTO Create(CreateOrderDTO orderDTO);
 
         void Delete(int id);
     }

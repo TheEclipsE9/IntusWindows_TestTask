@@ -35,9 +35,9 @@ namespace MyApp.WebAPI.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateOrderDTO orderDTO)
         {
-            _orderService.Create(orderDTO);
+            var order = _orderService.Create(orderDTO);
 
-            return Ok();
+            return Ok(order);
         }
 
         [HttpDelete("{id}")]

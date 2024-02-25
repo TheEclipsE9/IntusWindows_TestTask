@@ -45,7 +45,7 @@ namespace MyApp.Application.Services
             return orders;
         }
 
-        public void Create(CreateOrderDTO orderDTO)
+        public OrderDTO Create(CreateOrderDTO orderDTO)
         {
             var order = new Order()
             {
@@ -56,6 +56,13 @@ namespace MyApp.Application.Services
             _dbContext.Orders.Add(order);
 
             _dbContext.SaveChanges();
+
+            return new OrderDTO 
+            { 
+                Id = order.Id,
+                Name = orderDTO.Name,
+                State = orderDTO.State,
+            };
         }
 
         public void Delete(int id)
