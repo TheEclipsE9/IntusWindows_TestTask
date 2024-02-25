@@ -36,8 +36,8 @@ namespace MyApp.Application.Services
         public List<WindowDTO> GetAllByOrderId(int orderId)
         {
             var windows = _dbContext.Windows
-                .Where(x=>x.OrderId == orderId)
-                .Select(x=> new WindowDTO()
+                .Where(x => x.OrderId == orderId)
+                .Select(x => new WindowDTO()
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -48,7 +48,7 @@ namespace MyApp.Application.Services
             return windows;
         }
 
-        public void Create(CreateWindowDTO windowDTO)
+        public WindowDTO Create(CreateWindowDTO windowDTO)
         {
             var order = _dbContext.Orders.SingleOrDefault(x => x.Id == windowDTO.OrderId);
             if (order is null)
@@ -66,6 +66,13 @@ namespace MyApp.Application.Services
             _dbContext.Windows.Add(window);
 
             _dbContext.SaveChanges();
+
+            return new WindowDTO
+            {
+                Id = window.Id,
+                Name = window.Name,
+                Quantity = window.Quantity,
+            };
         }
 
         public void Update(int id, UpdateWindowDTO windowDTO)

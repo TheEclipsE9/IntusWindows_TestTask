@@ -36,9 +36,9 @@ namespace MyApp.WebAPI.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] CreateWindowDTO windowDTO)
         {
-            _windowService.Create(windowDTO);
+            var created = _windowService.Create(windowDTO);
 
-            return Ok();
+            return Ok(created);
         }
 
         [HttpPut("{id}")]

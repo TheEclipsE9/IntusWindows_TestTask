@@ -9,7 +9,7 @@ namespace MyApp.Domain.Contracts.Application
 
         List<WindowDTO> GetAllByOrderId(int orderId);
 
-        void Create(CreateWindowDTO windowDTO);
+        WindowDTO Create(CreateWindowDTO windowDTO);
 
         void Update(int id, UpdateWindowDTO windowDTO);
 
