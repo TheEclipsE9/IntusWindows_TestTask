@@ -40,6 +40,14 @@ namespace MyApp.WebAPI.Controllers
             return Ok(order);
         }
 
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] UpdateOrderDTO orderDTO)
+        {
+            var updated = _orderService.Update(id, orderDTO);
+
+            return Ok(updated);
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

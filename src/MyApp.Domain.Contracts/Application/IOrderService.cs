@@ -10,6 +10,8 @@ namespace MyApp.Domain.Contracts.Application
 
         OrderDTO Create(CreateOrderDTO orderDTO);
 
+        OrderDTO Update(int id, UpdateOrderDTO orderDTO);
+
         void Delete(int id);
     }
 }

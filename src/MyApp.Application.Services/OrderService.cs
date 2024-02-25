@@ -65,6 +65,27 @@ namespace MyApp.Application.Services
             };
         }
 
+        public OrderDTO Update(int id, UpdateOrderDTO orderDTO)
+        {
+            var order = _dbContext.Orders.SingleOrDefault(x=>x.Id ==  id);
+            if(order is null)
+            {
+                throw new ArgumentException();
+            }
+
+            order.Name = orderDTO.Name;
+            order.State = orderDTO.State;
+
+            _dbContext.SaveChanges();
+
+            return new OrderDTO
+            {
+                Id = order.Id,
+                Name = orderDTO.Name,
+                State = orderDTO.State,
+            };
+        }
+
         public void Delete(int id)
         {
             var order = _dbContext.Orders.SingleOrDefault(x => x.Id == id);
