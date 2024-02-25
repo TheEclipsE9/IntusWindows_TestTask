@@ -1,6 +1,7 @@
 ﻿@page "/Order/{_id:int}"
 
 @inject HttpClient _httpClient
+@inject NavigationManager _navigationManager
 
 <!---->
 @if (OrderDTO is null)
@@ -30,7 +31,7 @@ else
 
     <div class="text-center my-3">
         <button type="button" @onclick="() => _showCreateWindows = true" class="btn btn-primary">
-            Create order
+            Create window
         </button>
     </div>
 
@@ -52,7 +53,7 @@ else
                         <td>@item.Name</td>
                         <td>@item.Quantity</td>
                         <td>
-                            <button type="button" class="btn btn-outline-primary btn-sm">
+                            <button @onclick="() => NavigateToWindow(item)" type="button" class="btn btn-outline-primary btn-sm">
                                 Details
                             </button>
                             <button @onclick="() => DeleteWindowAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
@@ -102,5 +103,10 @@ else
     private void HandleOnCreated(WindowDTO window)
     {
         WindowDTOs.Add(window);
+    }
+
+    private void NavigateToWindow(WindowDTO window)
+    {
+        _navigationManager.NavigateTo($"Window/{window.Id}");
     }
 }

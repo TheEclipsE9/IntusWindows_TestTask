@@ -1,0 +1,87 @@
+﻿@page "/Window/{_id:int}"
+
+@inject HttpClient _httpClient
+
+@if (WindowDTO is null)
+{
+    <div>
+        Loading...
+    </div>
+}
+else
+{
+    <div class="align-items-center">
+        <div>
+            Id: @WindowDTO.Id
+        </div>
+        <div>
+            Name: @WindowDTO.Name
+        </div>
+        <div>
+            Quantity: @WindowDTO.Quantity
+        </div>
+    </div>
+
+    @if (_showCreateSubElement)
+    {
+    }
+
+    <div class="text-center my-3">
+        <button type="button" @onclick="() => _showCreateSubElement = true" class="btn btn-primary">
+            Create sub element
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Width</th>
+                    <th scope="col">Height</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in SubElementDTOs)
+                {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@Enum.GetName(item.Type)</td>
+                        <td>@item.Width</td>
+                        <td>@item.Height</td>
+                        <td>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int _id { get; set; }
+
+    private WindowDTO WindowDTO { get; set; }
+    private List<SubElementDTO> SubElementDTOs { get; set; } = new List<SubElementDTO>();
+    private bool _showCreateSubElement = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        WindowDTO = await _httpClient.GetFromJsonAsync<WindowDTO>($"https://localhost:7147/Window/{_id}");
+        Console.WriteLine($"_orderDTO {WindowDTO.Id}, {WindowDTO.Name}, {WindowDTO.Quantity}");
+
+        SubElementDTOs = await _httpClient.GetFromJsonAsync<List<SubElementDTO>>($"https://localhost:7147/SubElement/by-window/{_id}");
+        Console.WriteLine($"Recieve windows: {SubElementDTOs.Count}");
+        foreach (var item in SubElementDTOs)
+        {
+            var name = Enum.GetName(item.Type);
+            Console.WriteLine($"Id: {item.Id} | Type: {name}");
+        }
+    }
+}
