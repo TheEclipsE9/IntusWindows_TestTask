@@ -44,9 +44,9 @@ namespace MyApp.WebAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UpdateWindowDTO windowDTO)
         {
-            _windowService.Update(id, windowDTO);
+            var updated = _windowService.Update(id, windowDTO);
 
-            return Ok();
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]

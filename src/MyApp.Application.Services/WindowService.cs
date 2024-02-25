@@ -75,7 +75,7 @@ namespace MyApp.Application.Services
             };
         }
 
-        public void Update(int id, UpdateWindowDTO windowDTO)
+        public WindowDTO Update(int id, UpdateWindowDTO windowDTO)
         {
             var window = _dbContext.Windows.SingleOrDefault(x => x.Id == id);
             if (window is null)
@@ -87,6 +87,13 @@ namespace MyApp.Application.Services
             window.Quantity = windowDTO.Quantity;
 
             _dbContext.SaveChanges();
+
+            return new WindowDTO
+            {
+                Id = window.Id,
+                Name = window.Name,
+                Quantity = window.Quantity
+            };
         }
 
         public void Delete(int id)

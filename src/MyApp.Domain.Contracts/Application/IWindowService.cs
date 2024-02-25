@@ -11,7 +11,7 @@ namespace MyApp.Domain.Contracts.Application
 
         WindowDTO Create(CreateWindowDTO windowDTO);
 
-        void Update(int id, UpdateWindowDTO windowDTO);
+        WindowDTO Update(int id, UpdateWindowDTO windowDTO);
 
         void Delete(int id);
     }
