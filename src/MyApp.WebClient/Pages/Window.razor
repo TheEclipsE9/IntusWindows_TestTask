@@ -21,12 +21,20 @@ else
             Quantity: @WindowDTO.Quantity
         </div>
     </div>
+    @if (_showUpdateWindow)
+    {
+        <UpdateWindow Window="@WindowDTO" OnClickButtonClose="() => _showUpdateWindow = false" />
+    }
+    <div>
+        <button @onclick="() => _showUpdateWindow = true" type="button" class="btn btn-warning btn-sm">
+            Edit
+        </button>
+    </div>
 
     @if (_showCreateSubElement)
     {
         <CreateSubElement WindowId="_id" OnSubElementCreated="(subElement) => HandleOnCreated(subElement)" OnClickButtonClose="() => _showCreateSubElement = false" />
     }
-
     <div class="text-center my-3">
         <button type="button" @onclick="() => _showCreateSubElement = true" class="btn btn-primary">
             Create sub element
@@ -71,6 +79,7 @@ else
     private WindowDTO WindowDTO { get; set; }
     private List<SubElementDTO> SubElementDTOs { get; set; } = new List<SubElementDTO>();
     private bool _showCreateSubElement = false;
+    private bool _showUpdateWindow = false;
 
     protected override async Task OnInitializedAsync()
     {

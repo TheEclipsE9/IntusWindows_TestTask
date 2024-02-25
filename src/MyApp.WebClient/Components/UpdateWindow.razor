@@ -1,0 +1,75 @@
+﻿@inject HttpClient _httpClient
+
+<!---->
+
+<div class="modal fade show d-block" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Update order</h1>
+                <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn-close" aria-label="Close"></button>
+            </div>
+            <EditForm Model="_updateWindowDTO" OnValidSubmit="UpdateWindowAsync">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="Name" class="form-label">Name</label>
+                        <InputText @bind-Value="_updateWindowDTO.Name" class="form-control" id="Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="State" class="form-label">Quantity</label>
+                        <InputNumber @bind-Value="_updateWindowDTO.Quantity" class="form-control" id="Quantity" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn btn-secondary">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public WindowDTO Window { get; set; }
+
+    [Parameter]
+    public EventCallback OnClickButtonClose { get; set; }
+
+    private UpdateWindowDTO _updateWindowDTO;
+
+    protected override void OnInitialized()
+    {
+        _updateWindowDTO = new UpdateWindowDTO()
+        {
+            Name = Window.Name,
+            Quantity = Window.Quantity
+        };
+    }
+
+    private async Task UpdateWindowAsync()
+    {
+        Console.WriteLine($"UpdateWindowAsync: {_updateWindowDTO.Name}; {_updateWindowDTO.Quantity}");
+        var response = await _httpClient.PutAsJsonAsync<UpdateWindowDTO>($"https://localhost:7147/Window/{Window.Id}", _updateWindowDTO);
+        if (response.IsSuccessStatusCode)
+        {
+            var updated = await response.Content.ReadFromJsonAsync<WindowDTO>();
+            if (updated is null)
+            {
+                Console.WriteLine("Updated is null");
+            }
+            else
+            {
+                Window.Name = updated.Name;
+                Window.Quantity = updated.Quantity;
+                Console.WriteLine("Success");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+        await OnClickButtonClose.InvokeAsync();
+    }
+}
