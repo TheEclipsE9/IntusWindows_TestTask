@@ -37,7 +37,7 @@
                         <button @onclick="() => NavigateToOrder(item)" type=" button" class="btn btn-outline-primary btn-sm">
                             Details
                         </button>
-                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <button @onclick="() => DeleteOrderAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
                             Delete
                         </button>
                     </td>
@@ -60,5 +60,20 @@
     private void NavigateToOrder(OrderDTO order)
     {
         _navigationManager.NavigateTo($"Order/{order.Id}");
+    }
+
+    private async Task DeleteOrderAsync(OrderDTO order)
+    {
+        Console.WriteLine($"DeleteOrder: {order.Id}");
+        var response = await _httpClient.DeleteAsync($"https://localhost:7147/Order/{order.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            Orders.Remove(order);
+            Console.WriteLine("Success");
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
     }
 }
