@@ -24,7 +24,8 @@ namespace MyApp.WebAPI.Controllers
             return Ok(window);
         }
 
-        [HttpGet("/by-order/{orderId}")]
+        [HttpGet]
+        [Route(("by-order/{orderId}"))]
         public IActionResult GetAllByOrderId(int orderId)
         {
             var window = _windowService.GetAllByOrderId(orderId);
