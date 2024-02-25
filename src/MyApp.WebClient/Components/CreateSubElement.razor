@@ -1,0 +1,85 @@
+﻿@inject HttpClient _httpClient
+
+<!---->
+
+<div class="modal fade show d-block" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Create order</h1>
+                <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn-close" aria-label="Close"></button>
+            </div>
+            <EditForm Model="_createSubElementDTO" OnValidSubmit="CreateSubElementAsync">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="Type" class="form-label">Type</label>
+                        <InputSelect @bind-Value="_createSubElementDTO.Type" class="form-select" id="Type">
+                            @foreach (var type in Enum.GetValues(typeof(SubElementType)))
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Width" class="form-label">Width</label>
+                        <InputNumber @bind-Value="_createSubElementDTO.Width" class="form-control" id="Width" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="Height" class="form-label">Height</label>
+                        <InputNumber @bind-Value="_createSubElementDTO.Height" class="form-control" id="Height" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn btn-secondary">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int WindowId { get; set; }
+    [Parameter]
+    public EventCallback OnClickButtonClose { get; set; }
+    [Parameter]
+    public EventCallback<SubElementDTO> OnSubElementCreated { get; set; }
+
+    private CreateSubElementDTO _createSubElementDTO;
+
+    protected override void OnInitialized()
+    {
+        _createSubElementDTO = new CreateSubElementDTO()
+        {
+            Type = SubElementType.Doors,
+            Width = 0,
+            Height = 0,
+            WindowId = WindowId
+        };
+    }
+
+    private async Task CreateSubElementAsync()
+    {
+        Console.WriteLine($"CreateOrderAsync: {_createSubElementDTO.Type}; {_createSubElementDTO.Width}; {_createSubElementDTO.Height}");
+        var response = await _httpClient.PostAsJsonAsync<CreateSubElementDTO>("https://localhost:7147/SubElement", _createSubElementDTO);
+        if (response.IsSuccessStatusCode)
+        {
+            var created = await response.Content.ReadFromJsonAsync<SubElementDTO>();
+            if (created is null)
+            {
+                Console.WriteLine("Created is null");
+            }
+            else
+            {
+                await OnSubElementCreated.InvokeAsync(created);
+                Console.WriteLine("Success");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+        await OnClickButtonClose.InvokeAsync();
+    }
+}

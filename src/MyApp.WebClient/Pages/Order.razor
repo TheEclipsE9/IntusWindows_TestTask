@@ -87,7 +87,7 @@ else
 
     private async Task DeleteWindowAsync(WindowDTO window)
     {
-        Console.WriteLine($"DeleteOrder: {window.Id}");
+        Console.WriteLine($"DeleteWind0w: {window.Id}");
         var response = await _httpClient.DeleteAsync($"https://localhost:7147/Window/{window.Id}");
         if (response.IsSuccessStatusCode)
         {

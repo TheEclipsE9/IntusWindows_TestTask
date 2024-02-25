@@ -24,6 +24,7 @@ else
 
     @if (_showCreateSubElement)
     {
+        <CreateSubElement WindowId="_id" OnSubElementCreated="(subElement) => HandleOnCreated(subElement)" OnClickButtonClose="() => _showCreateSubElement = false" />
     }
 
     <div class="text-center my-3">
@@ -52,7 +53,7 @@ else
                         <td>@item.Width</td>
                         <td>@item.Height</td>
                         <td>
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <button @onclick="() => DeleteSubElementAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
                                 Delete
                             </button>
                         </td>
@@ -83,5 +84,25 @@ else
             var name = Enum.GetName(item.Type);
             Console.WriteLine($"Id: {item.Id} | Type: {name}");
         }
+    }
+
+    private async Task DeleteSubElementAsync(SubElementDTO subElement)
+    {
+        Console.WriteLine($"DeleteSubElement: {subElement.Id}");
+        var response = await _httpClient.DeleteAsync($"https://localhost:7147/SubElement/{subElement.Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            SubElementDTOs.Remove(subElement);
+            Console.WriteLine("Success");
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+
+    private void HandleOnCreated(SubElementDTO subElement)
+    {
+        SubElementDTOs.Add(subElement);
     }
 }
