@@ -1,0 +1,58 @@
+﻿@inject HttpClient _httpClient
+
+<!---->
+
+<div class="modal fade show d-block" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Create order</h1>
+                <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn-close" aria-label="Close"></button>
+            </div>
+            <EditForm Model="_createOrderDTO" OnValidSubmit="CreateOrderAsync">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="Name" class="form-label">Name</label>
+                        <InputText @bind-Value="_createOrderDTO.Name" class="form-control" id="Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="State" class="form-label">State</label>
+                        <InputText @bind-Value="_createOrderDTO.State" class="form-control" id="State" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" @onclick="() => OnClickButtonClose.InvokeAsync()" class="btn btn-secondary">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </EditForm>              
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public EventCallback OnClickButtonClose { get; set; }
+
+    private CreateOrderDTO _createOrderDTO = new CreateOrderDTO()
+    {
+        Name = "",
+        State = ""
+    };
+
+    private async Task CreateOrderAsync()
+    {
+        Console.WriteLine($"CreateOrderAsync: {_createOrderDTO.Name}; {_createOrderDTO.State}");
+        var response = await _httpClient.PostAsJsonAsync<CreateOrderDTO>("https://localhost:7147/Order", _createOrderDTO);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Success");
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+        await OnClickButtonClose.InvokeAsync();
+    }
+}
