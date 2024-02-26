@@ -39,6 +39,7 @@
     public EventCallback OnClickButtonClose { get; set; }
     [Parameter]
     public EventCallback<OrderDTO> OnOrderCreated { get; set; }
+    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     private CreateOrderDTO _createOrderDTO = new CreateOrderDTO()
     {
@@ -49,7 +50,7 @@
     private async Task CreateOrderAsync()
     {
         Console.WriteLine($"CreateOrderAsync: {_createOrderDTO.Name}; {_createOrderDTO.State}");
-        var response = await _httpClient.PostAsJsonAsync<CreateOrderDTO>("https://localhost:7147/Order", _createOrderDTO);
+        var response = await _httpClient.PostAsJsonAsync<CreateOrderDTO>($"{APIEndpoints.ServerBaseAddress}/Order", _createOrderDTO);
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<OrderDTO>();

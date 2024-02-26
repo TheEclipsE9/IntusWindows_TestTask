@@ -41,6 +41,7 @@
     public EventCallback OnClickButtonClose { get; set; }
 
     private UpdateWindowDTO _updateWindowDTO;
+    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     protected override void OnInitialized()
     {
@@ -54,7 +55,7 @@
     private async Task UpdateWindowAsync()
     {
         Console.WriteLine($"UpdateWindowAsync: {_updateWindowDTO.Name}; {_updateWindowDTO.Quantity}");
-        var response = await _httpClient.PutAsJsonAsync<UpdateWindowDTO>($"https://localhost:7147/Window/{Window.Id}", _updateWindowDTO);
+        var response = await _httpClient.PutAsJsonAsync<UpdateWindowDTO>($"{APIEndpoints.ServerBaseAddress}/Window/{Window.Id}", _updateWindowDTO);
         if (response.IsSuccessStatusCode)
         {
             var updated = await response.Content.ReadFromJsonAsync<WindowDTO>();

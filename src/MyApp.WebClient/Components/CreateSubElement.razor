@@ -48,6 +48,7 @@
     public EventCallback OnClickButtonClose { get; set; }
     [Parameter]
     public EventCallback<SubElementDTO> OnSubElementCreated { get; set; }
+    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     private CreateSubElementDTO _createSubElementDTO;
 
@@ -65,7 +66,7 @@
     private async Task CreateSubElementAsync()
     {
         Console.WriteLine($"CreateOrderAsync: {_createSubElementDTO.Type}; {_createSubElementDTO.Width}; {_createSubElementDTO.Height}");
-        var response = await _httpClient.PostAsJsonAsync<CreateSubElementDTO>("https://localhost:7147/SubElement", _createSubElementDTO);
+        var response = await _httpClient.PostAsJsonAsync<CreateSubElementDTO>($"{APIEndpoints.ServerBaseAddress}/SubElement", _createSubElementDTO);
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<SubElementDTO>();

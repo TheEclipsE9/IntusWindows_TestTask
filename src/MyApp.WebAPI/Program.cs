@@ -47,6 +47,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/", () => "Working");
+
 await InitializeDataBase();
 
 app.Run();

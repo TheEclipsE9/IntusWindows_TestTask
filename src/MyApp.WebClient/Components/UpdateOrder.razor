@@ -41,6 +41,7 @@
     public EventCallback OnClickButtonClose { get; set; }
 
     private UpdateOrderDTO _updateOrderDTO;
+    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     protected override void OnInitialized()
     {
@@ -54,7 +55,7 @@
     private async Task UpdateOrderAsync()
     {
         Console.WriteLine($"UpdateOrderAsync: {_updateOrderDTO.Name}; {_updateOrderDTO.State}");
-        var response = await _httpClient.PutAsJsonAsync<UpdateOrderDTO>($"https://localhost:7147/Order/{Order.Id}", _updateOrderDTO);
+        var response = await _httpClient.PutAsJsonAsync<UpdateOrderDTO>($"{APIEndpoints.ServerBaseAddress}/Order/{Order.Id}", _updateOrderDTO);
         if (response.IsSuccessStatusCode)
         {
             var updated = await response.Content.ReadFromJsonAsync<OrderDTO>();

@@ -79,6 +79,7 @@ else
 @code {
     [Parameter]
     public int _id { get; set; }
+    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     private OrderDTO OrderDTO { get; set; }
     private List<WindowDTO> WindowDTOs { get; set; } = new List<WindowDTO>();
@@ -87,17 +88,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        OrderDTO = await _httpClient.GetFromJsonAsync<OrderDTO>($"https://localhost:7147/Order/{_id}");
+        OrderDTO = await _httpClient.GetFromJsonAsync<OrderDTO>($"{APIEndpoints.ServerBaseAddress}/Order/{_id}");
         Console.WriteLine($"_orderDTO {OrderDTO.Id}, {OrderDTO.Name}, {OrderDTO.State}");
 
-        WindowDTOs = await _httpClient.GetFromJsonAsync<List<WindowDTO>>($"https://localhost:7147/Window/by-order/{_id}");
+        WindowDTOs = await _httpClient.GetFromJsonAsync<List<WindowDTO>>($"{APIEndpoints.ServerBaseAddress}/Window/by-order/{_id}");
         Console.WriteLine($"Recieve windows: {WindowDTOs.Count}");
     }
 
     private async Task DeleteWindowAsync(WindowDTO window)
     {
         Console.WriteLine($"DeleteWind0w: {window.Id}");
-        var response = await _httpClient.DeleteAsync($"https://localhost:7147/Window/{window.Id}");
+        var response = await _httpClient.DeleteAsync($"{APIEndpoints.ServerBaseAddress}/Window/{window.Id}");
         if (response.IsSuccessStatusCode)
         {
             WindowDTOs.Remove(window);

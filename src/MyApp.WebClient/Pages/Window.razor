@@ -82,6 +82,7 @@ else
 @code {
     [Parameter]
     public int _id { get; set; }
+    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     private WindowDTO WindowDTO { get; set; }
     private List<SubElementDTO> SubElementDTOs { get; set; } = new List<SubElementDTO>();
@@ -93,10 +94,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        WindowDTO = await _httpClient.GetFromJsonAsync<WindowDTO>($"https://localhost:7147/Window/{_id}");
+        WindowDTO = await _httpClient.GetFromJsonAsync<WindowDTO>($"{APIEndpoints.ServerBaseAddress}/Window/{_id}");
         Console.WriteLine($"_orderDTO {WindowDTO.Id}, {WindowDTO.Name}, {WindowDTO.Quantity}");
 
-        SubElementDTOs = await _httpClient.GetFromJsonAsync<List<SubElementDTO>>($"https://localhost:7147/SubElement/by-window/{_id}");
+        SubElementDTOs = await _httpClient.GetFromJsonAsync<List<SubElementDTO>>($"{APIEndpoints.ServerBaseAddress}/SubElement/by-window/{_id}");
         Console.WriteLine($"Recieve windows: {SubElementDTOs.Count}");
         foreach (var item in SubElementDTOs)
         {
@@ -108,7 +109,7 @@ else
     private async Task DeleteSubElementAsync(SubElementDTO subElement)
     {
         Console.WriteLine($"DeleteSubElement: {subElement.Id}");
-        var response = await _httpClient.DeleteAsync($"https://localhost:7147/SubElement/{subElement.Id}");
+        var response = await _httpClient.DeleteAsync($"{APIEndpoints.ServerBaseAddress}/SubElement/{subElement.Id}");
         if (response.IsSuccessStatusCode)
         {
             SubElementDTOs.Remove(subElement);

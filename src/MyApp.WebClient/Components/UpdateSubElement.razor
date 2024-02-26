@@ -50,6 +50,7 @@
     public EventCallback OnClickButtonClose { get; set; }
 
     private UpdateSubElementDTO _updateSubElementDTO;
+    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     protected override void OnInitialized()
     {
@@ -64,7 +65,7 @@
     private async Task UpdateSubElementAsync()
     {
         Console.WriteLine($"UpdateWindowAsync: {_updateSubElementDTO.Type}; {_updateSubElementDTO.Width}; {_updateSubElementDTO.Height}");
-        var response = await _httpClient.PutAsJsonAsync<UpdateSubElementDTO>($"https://localhost:7147/SubElement/{SubElement.Id}", _updateSubElementDTO);
+        var response = await _httpClient.PutAsJsonAsync<UpdateSubElementDTO>($"{APIEndpoints.ServerBaseAddress}/SubElement/{SubElement.Id}", _updateSubElementDTO);
         if (response.IsSuccessStatusCode)
         {
             var updated = await response.Content.ReadFromJsonAsync<UpdateSubElementDTO>();

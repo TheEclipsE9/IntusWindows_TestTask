@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Windows
+      MYSQL_USER: api
+      MYSQL_PASSWORD: api
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  
+  myapp.webapi:
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: src/MyApp.WebAPI/Dockerfile
+    ports:
+      - "5001:80"
+
+  myapp.webclient:
+    depends_on:
+      - myapp.webapi
+    build:
+      context: .
+      dockerfile: src/MyApp.WebClient/Dockerfile
+    ports:
+      - "6001:80"
+
+volumes:
+  mysql_data:

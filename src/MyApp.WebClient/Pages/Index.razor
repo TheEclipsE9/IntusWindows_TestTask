@@ -8,7 +8,9 @@
 {
     <CreateOrder OnOrderCreated="(createdOrder) => HandleOnOrderCreated(createdOrder)" OnClickButtonClose="() => _showCreateOrder = false" />
 }
-
+<div>
+    Cur: @_env
+</div>
 <div class="text-center my-3">
     <button type="button" @onclick="() => _showCreateOrder = true" class="btn btn-primary">
         Create order
@@ -49,12 +51,25 @@
 </div>
 
 @code {
+    [Inject] IConfiguration Configuration { get; set; }
+    [Inject] APIEndpoints APIEndpoints { get; set; }
+    private string _env;
     private bool _showCreateOrder = false;
     private List<OrderDTO> Orders { get; set; } = new List<OrderDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        Orders = await _httpClient.GetFromJsonAsync<List<OrderDTO>>("https://localhost:7147/Order");
+        _env = Configuration.GetValue<string>("Environment");
+        Console.WriteLine(APIEndpoints.ServerBaseAddress);
+        try
+        {
+            Orders = await _httpClient.GetFromJsonAsync<List<OrderDTO>>($"{APIEndpoints.ServerBaseAddress}/Order");
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("Failed");
+            throw;
+        }
     }
 
     private void NavigateToOrder(OrderDTO order)
@@ -65,7 +80,7 @@
     private async Task DeleteOrderAsync(OrderDTO order)
     {
         Console.WriteLine($"DeleteOrder: {order.Id}");
-        var response = await _httpClient.DeleteAsync($"https://localhost:7147/Order/{order.Id}");
+        var response = await _httpClient.DeleteAsync($"{APIEndpoints.ServerBaseAddress}/Order/{order.Id}");
         if (response.IsSuccessStatusCode)
         {
             Orders.Remove(order);

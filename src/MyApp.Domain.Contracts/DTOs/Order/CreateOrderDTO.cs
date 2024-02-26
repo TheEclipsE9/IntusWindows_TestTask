@@ -9,7 +9,7 @@ namespace MyApp.Domain.Contracts.DTOs.Order
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Minimum lenghs is 2, and Maximum is 30")]
-        [StringLength(30, MinimumLength = 3, ErrorMessage = "Minimum lenghs is 2, and Maximum is 30")]
+        [StringLength(30, MinimumLength = 2, ErrorMessage = "Minimum lenghs is 2, and Maximum is 30")]
         public string State { get; set; }
     }
 }
