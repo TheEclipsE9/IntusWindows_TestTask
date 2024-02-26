@@ -10,7 +10,11 @@
 }
 else
 {
-    <div class="align-items-center">
+    <div class="text-center fw-bold m-3 display-5">
+        Order Information
+    </div>
+
+    <div class="d-flex flex-column align-items-center">
         <div>
             Id: @_order.Id
         </div>
@@ -28,9 +32,9 @@ else
             Order="@_order" 
             OnClickButtonClose="() => _showUpdateOrder = false" />
     }
-    <div>
-        <button @onclick="() => _showUpdateOrder = true" type="button" class="btn btn-warning btn-sm">
-            Edit
+    <div class="text-center my-3">
+        <button @onclick="() => _showUpdateOrder = true" type="button" class="btn btn-warning btn">
+            Edit order
         </button>
     </div>
 

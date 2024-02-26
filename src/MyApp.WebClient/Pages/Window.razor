@@ -10,7 +10,11 @@
 }
 else
 {
-    <div class="align-items-center">
+    <div class="text-center fw-bold m-3 display-5">
+        Window Information
+    </div>
+
+    <div class="d-flex flex-column align-items-center">
         <div>
             Id: @_window.Id
         </div>
@@ -27,9 +31,9 @@ else
             Window="@_window" 
             OnClickButtonClose="() => _showUpdateWindow = false" />
     }
-    <div>
-        <button @onclick="() => _showUpdateWindow = true" type="button" class="btn btn-warning btn-sm">
-            Edit
+    <div class="text-center my-3">
+        <button @onclick="() => _showUpdateWindow = true" type="button" class="btn btn-warning btn">
+            Edit window
         </button>
     </div>
 
@@ -72,7 +76,7 @@ else
                         <td>@subElement.Width</td>
                         <td>@subElement.Height</td>
                         <td>
-                            <button @onclick="() => {_showUpdateSubElement = true; _subElementToUpdate = subElement; }" type="submit" class="btn btn-warning btn-sm">
+                            <button @onclick="() => {_showUpdateSubElement = true; _subElementToUpdate = subElement; }" type="submit" class="btn btn-outline-warning btn-sm">
                                 Edit
                             </button>
                             <button @onclick="() => DeleteSubElementAsync(subElement)" type="submit" class="btn btn-outline-danger btn-sm">

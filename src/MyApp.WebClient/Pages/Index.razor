@@ -8,7 +8,9 @@
         OnOrderCreated="(createdOrder) => HandleOnOrderCreated(createdOrder)" 
         OnClickButtonClose="() => _showCreateOrder = false" />
 }
-
+<div class="text-center fw-bold m-3 display-5">
+    List of orders
+</div>
 <div class="text-center my-3">
     <button type="button" @onclick="() => _showCreateOrder = true" class="btn btn-primary">
         Create order
