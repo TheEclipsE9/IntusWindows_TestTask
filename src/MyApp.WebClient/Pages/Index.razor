@@ -1,16 +1,14 @@
 ﻿@page "/"
 
-@inject HttpClient _httpClient
-@inject NavigationManager _navigationManager
 
-<!---->
+
 @if (_showCreateOrder)
 {
-    <CreateOrder OnOrderCreated="(createdOrder) => HandleOnOrderCreated(createdOrder)" OnClickButtonClose="() => _showCreateOrder = false" />
+    <CreateOrder 
+        OnOrderCreated="(createdOrder) => HandleOnOrderCreated(createdOrder)" 
+        OnClickButtonClose="() => _showCreateOrder = false" />
 }
-<div>
-    Cur: @_env
-</div>
+
 <div class="text-center my-3">
     <button type="button" @onclick="() => _showCreateOrder = true" class="btn btn-primary">
         Create order
@@ -29,17 +27,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Orders)
+            @foreach (var order in _orders)
             {
                 <tr>
-                    <th scope="row">@item.Id</th>
-                    <td>@item.Name</td>
-                    <td>@item.State</td>
+                    <th scope="row">@order.Id</th>
+                    <td>@order.Name</td>
+                    <td>@order.State</td>
                     <td>
-                        <button @onclick="() => NavigateToOrder(item)" type="button" class="btn btn-outline-primary btn-sm">
+                        <button @onclick="() => NavigateToOrder(order)" type="button" class="btn btn-outline-primary btn-sm">
                             Details
                         </button>
-                        <button @onclick="() => DeleteOrderAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
+                        <button @onclick="() => DeleteOrderAsync(order)" type="submit" class="btn btn-outline-danger btn-sm">
                             Delete
                         </button>
                     </td>
@@ -51,49 +49,34 @@
 </div>
 
 @code {
-    [Inject] IConfiguration Configuration { get; set; }
-    [Inject] APIEndpoints APIEndpoints { get; set; }
-    private string _env;
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; }
+    [Inject] private APIEndpoints _apiEndpoints { get; set; }
+
     private bool _showCreateOrder = false;
-    private List<OrderDTO> Orders { get; set; } = new List<OrderDTO>();
+    private List<OrderDTO> _orders = new List<OrderDTO>();
 
     protected override async Task OnInitializedAsync()
     {
-        _env = Configuration.GetValue<string>("Environment");
-        Console.WriteLine(APIEndpoints.ServerBaseAddress);
-        try
-        {
-            Orders = await _httpClient.GetFromJsonAsync<List<OrderDTO>>($"{APIEndpoints.ServerBaseAddress}/Order");
-        }
-        catch (Exception)
-        {
-            Console.WriteLine("Failed");
-            throw;
-        }
-    }
-
-    private void NavigateToOrder(OrderDTO order)
-    {
-        _navigationManager.NavigateTo($"Order/{order.Id}");
+        _orders = await _httpClient.GetFromJsonAsync<List<OrderDTO>>($"{_apiEndpoints.ServerBaseAddress}/Order") ?? _orders;
     }
 
     private async Task DeleteOrderAsync(OrderDTO order)
     {
-        Console.WriteLine($"DeleteOrder: {order.Id}");
-        var response = await _httpClient.DeleteAsync($"{APIEndpoints.ServerBaseAddress}/Order/{order.Id}");
+        var response = await _httpClient.DeleteAsync($"{_apiEndpoints.ServerBaseAddress}/Order/{order.Id}");
         if (response.IsSuccessStatusCode)
         {
-            Orders.Remove(order);
-            Console.WriteLine("Success");
+            _orders.Remove(order);
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed DeleteOrderAsync");
         }
     }
 
-    private void HandleOnOrderCreated(OrderDTO order)
-    {
-        Orders.Add(order);
-    }
+    private void HandleOnOrderCreated(OrderDTO createdOrder)
+        => _orders.Add(createdOrder);
+
+    private void NavigateToOrder(OrderDTO order)
+    => _navigationManager.NavigateTo($"Order/{order.Id}");
 }

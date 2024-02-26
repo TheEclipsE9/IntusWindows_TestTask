@@ -1,8 +1,8 @@
-﻿@page "/Window/{_id:int}"
+﻿@page "/Window/{Id:int}"
 
-@inject HttpClient _httpClient
 
-@if (WindowDTO is null)
+
+@if (_window is null)
 {
     <div>
         Loading...
@@ -12,18 +12,20 @@ else
 {
     <div class="align-items-center">
         <div>
-            Id: @WindowDTO.Id
+            Id: @_window.Id
         </div>
         <div>
-            Name: @WindowDTO.Name
+            Name: @_window.Name
         </div>
         <div>
-            Quantity: @WindowDTO.Quantity
+            Quantity: @_window.Quantity
         </div>
     </div>
     @if (_showUpdateWindow)
     {
-        <UpdateWindow Window="@WindowDTO" OnClickButtonClose="() => _showUpdateWindow = false" />
+        <UpdateWindow 
+            Window="@_window" 
+            OnClickButtonClose="() => _showUpdateWindow = false" />
     }
     <div>
         <button @onclick="() => _showUpdateWindow = true" type="button" class="btn btn-warning btn-sm">
@@ -31,14 +33,19 @@ else
         </button>
     </div>
 
-    @if (_showUpdateSubElement && _toUpdateSubElement is not null)
+    @if (_showUpdateSubElement && _subElementToUpdate is not null)
     {
-        <UpdateSubElement SubElement="_toUpdateSubElement" OnClickButtonClose="() => _showUpdateSubElement = false" />
+        <UpdateSubElement 
+            SubElement="_subElementToUpdate" 
+            OnClickButtonClose="() => _showUpdateSubElement = false" />
     }
 
     @if (_showCreateSubElement)
     {
-        <CreateSubElement WindowId="_id" OnSubElementCreated="(subElement) => HandleOnCreated(subElement)" OnClickButtonClose="() => _showCreateSubElement = false" />
+        <CreateSubElement 
+            WindowId="Id" 
+            OnSubElementCreated="(subElement) => HandleOnSubElementCreated(subElement)" 
+            OnClickButtonClose="() => _showCreateSubElement = false" />
     }
     <div class="text-center my-3">
         <button type="button" @onclick="() => _showCreateSubElement = true" class="btn btn-primary">
@@ -57,18 +64,18 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in SubElementDTOs)
+                @foreach (var subElement in _subElements)
                 {
                     <tr>
-                        <th scope="row">@item.Id</th>
-                        <td>@Enum.GetName(item.Type)</td>
-                        <td>@item.Width</td>
-                        <td>@item.Height</td>
+                        <th scope="row">@subElement.Id</th>
+                        <td>@Enum.GetName(subElement.Type)</td>
+                        <td>@subElement.Width</td>
+                        <td>@subElement.Height</td>
                         <td>
-                            <button @onclick="() => {_showUpdateSubElement = true; _toUpdateSubElement = item; }" type="submit" class="btn btn-warning btn-sm">
+                            <button @onclick="() => {_showUpdateSubElement = true; _subElementToUpdate = subElement; }" type="submit" class="btn btn-warning btn-sm">
                                 Edit
                             </button>
-                            <button @onclick="() => DeleteSubElementAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
+                            <button @onclick="() => DeleteSubElementAsync(subElement)" type="submit" class="btn btn-outline-danger btn-sm">
                                 Delete
                             </button>
                         </td>
@@ -81,48 +88,37 @@ else
 
 @code {
     [Parameter]
-    public int _id { get; set; }
-    [Inject] APIEndpoints APIEndpoints { get; set; }
+    public int Id { get; set; }
 
-    private WindowDTO WindowDTO { get; set; }
-    private List<SubElementDTO> SubElementDTOs { get; set; } = new List<SubElementDTO>();
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] private APIEndpoints _apiEndpoints { get; set; }
+
+    private WindowDTO _window = null;
+    private List<SubElementDTO> _subElements = new List<SubElementDTO>();
     private bool _showCreateSubElement = false;
     private bool _showUpdateWindow = false;
     private bool _showUpdateSubElement = false;
-
-    private SubElementDTO _toUpdateSubElement;
+    private SubElementDTO _subElementToUpdate = null;
 
     protected override async Task OnInitializedAsync()
     {
-        WindowDTO = await _httpClient.GetFromJsonAsync<WindowDTO>($"{APIEndpoints.ServerBaseAddress}/Window/{_id}");
-        Console.WriteLine($"_orderDTO {WindowDTO.Id}, {WindowDTO.Name}, {WindowDTO.Quantity}");
-
-        SubElementDTOs = await _httpClient.GetFromJsonAsync<List<SubElementDTO>>($"{APIEndpoints.ServerBaseAddress}/SubElement/by-window/{_id}");
-        Console.WriteLine($"Recieve windows: {SubElementDTOs.Count}");
-        foreach (var item in SubElementDTOs)
-        {
-            var name = Enum.GetName(item.Type);
-            Console.WriteLine($"Id: {item.Id} | Type: {name}");
-        }
+        _window = await _httpClient.GetFromJsonAsync<WindowDTO>($"{_apiEndpoints.ServerBaseAddress}/Window/{Id}") ?? _window;
+        _subElements = await _httpClient.GetFromJsonAsync<List<SubElementDTO>>($"{_apiEndpoints.ServerBaseAddress}/SubElement/by-window/{Id}") ?? _subElements;
     }
 
     private async Task DeleteSubElementAsync(SubElementDTO subElement)
     {
-        Console.WriteLine($"DeleteSubElement: {subElement.Id}");
-        var response = await _httpClient.DeleteAsync($"{APIEndpoints.ServerBaseAddress}/SubElement/{subElement.Id}");
+        var response = await _httpClient.DeleteAsync($"{_apiEndpoints.ServerBaseAddress}/SubElement/{subElement.Id}");
         if (response.IsSuccessStatusCode)
         {
-            SubElementDTOs.Remove(subElement);
-            Console.WriteLine("Success");
+            _subElements.Remove(subElement);
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed DeleteSubElementAsync");
         }
     }
 
-    private void HandleOnCreated(SubElementDTO subElement)
-    {
-        SubElementDTOs.Add(subElement);
-    }
+    private void HandleOnSubElementCreated(SubElementDTO createdSubElement)
+        => _subElements.Add(createdSubElement);
 }

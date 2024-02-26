@@ -1,10 +1,8 @@
-﻿@page "/Order/{_id:int}"
+﻿@page "/Order/{Id:int}"
 
-@inject HttpClient _httpClient
-@inject NavigationManager _navigationManager
 
-<!---->
-@if (OrderDTO is null)
+
+@if (_order is null)
 {
     <div>
         Loading...
@@ -14,18 +12,21 @@ else
 {
     <div class="align-items-center">
         <div>
-            Id: @OrderDTO.Id
+            Id: @_order.Id
         </div>
         <div>
-            Name: @OrderDTO.Name
+            Name: @_order.Name
         </div>
         <div>
-            State: @OrderDTO.State
+            State: @_order.State
         </div>
     </div>
+
     @if (_showUpdateOrder)
     {
-        <UpdateOrder Order="@OrderDTO" OnClickButtonClose="() => _showUpdateOrder = false" />
+        <UpdateOrder 
+            Order="@_order" 
+            OnClickButtonClose="() => _showUpdateOrder = false" />
     }
     <div>
         <button @onclick="() => _showUpdateOrder = true" type="button" class="btn btn-warning btn-sm">
@@ -35,7 +36,10 @@ else
 
     @if (_showCreateWindows)
     {
-        <CreateWindow OrderId="_id" OnWindowCreated="(createdWindow) => HandleOnCreated(createdWindow)" OnClickButtonClose="() => _showCreateWindows = false" />
+        <CreateWindow 
+            OrderId="Id" 
+            OnWindowCreated="(createdWindow) => HandleOnWindowCreated(createdWindow)" 
+            OnClickButtonClose="() => _showCreateWindows = false" />
     }
     <div class="text-center my-3">
         <button type="button" @onclick="() => _showCreateWindows = true" class="btn btn-primary">
@@ -54,17 +58,17 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in WindowDTOs)
+                @foreach (var window in _windows)
                 {
                     <tr>
-                        <th scope="row">@item.Id</th>
-                        <td>@item.Name</td>
-                        <td>@item.Quantity</td>
+                        <th scope="row">@window.Id</th>
+                        <td>@window.Name</td>
+                        <td>@window.Quantity</td>
                         <td>
-                            <button @onclick="() => NavigateToWindow(item)" type="button" class="btn btn-outline-primary btn-sm">
+                            <button @onclick="() => NavigateToWindow(window)" type="button" class="btn btn-outline-primary btn-sm">
                                 Details
                             </button>
-                            <button @onclick="() => DeleteWindowAsync(item)" type="submit" class="btn btn-outline-danger btn-sm">
+                            <button @onclick="() => DeleteWindowAsync(window)" type="submit" class="btn btn-outline-danger btn-sm">
                                 Delete
                             </button>
                         </td>
@@ -78,45 +82,39 @@ else
 
 @code {
     [Parameter]
-    public int _id { get; set; }
-    [Inject] APIEndpoints APIEndpoints { get; set; }
+    public int Id { get; set; }
 
-    private OrderDTO OrderDTO { get; set; }
-    private List<WindowDTO> WindowDTOs { get; set; } = new List<WindowDTO>();
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; }
+    [Inject] private APIEndpoints _apiEndpoints { get; set; }
+
+    private OrderDTO _order = null;
+    private List<WindowDTO> _windows = new List<WindowDTO>();
     private bool _showCreateWindows = false;
     private bool _showUpdateOrder = false;
 
     protected override async Task OnInitializedAsync()
     {
-        OrderDTO = await _httpClient.GetFromJsonAsync<OrderDTO>($"{APIEndpoints.ServerBaseAddress}/Order/{_id}");
-        Console.WriteLine($"_orderDTO {OrderDTO.Id}, {OrderDTO.Name}, {OrderDTO.State}");
-
-        WindowDTOs = await _httpClient.GetFromJsonAsync<List<WindowDTO>>($"{APIEndpoints.ServerBaseAddress}/Window/by-order/{_id}");
-        Console.WriteLine($"Recieve windows: {WindowDTOs.Count}");
+        _order = await _httpClient.GetFromJsonAsync<OrderDTO>($"{_apiEndpoints.ServerBaseAddress}/Order/{Id}") ?? _order;
+        _windows = await _httpClient.GetFromJsonAsync<List<WindowDTO>>($"{_apiEndpoints.ServerBaseAddress}/Window/by-order/{Id}") ?? _windows;
     }
 
     private async Task DeleteWindowAsync(WindowDTO window)
     {
-        Console.WriteLine($"DeleteWind0w: {window.Id}");
-        var response = await _httpClient.DeleteAsync($"{APIEndpoints.ServerBaseAddress}/Window/{window.Id}");
+        var response = await _httpClient.DeleteAsync($"{_apiEndpoints.ServerBaseAddress}/Window/{window.Id}");
         if (response.IsSuccessStatusCode)
         {
-            WindowDTOs.Remove(window);
-            Console.WriteLine("Success");
+            _windows.Remove(window);
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed DeleteWindowAsync");
         }
     }
 
-    private void HandleOnCreated(WindowDTO window)
-    {
-        WindowDTOs.Add(window);
-    }
+    private void HandleOnWindowCreated(WindowDTO createdWindow)
+        => _windows.Add(createdWindow);
 
     private void NavigateToWindow(WindowDTO window)
-    {
-        _navigationManager.NavigateTo($"Window/{window.Id}");
-    }
+        => _navigationManager.NavigateTo($"Window/{window.Id}");
 }
