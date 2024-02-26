@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApp.Domain.Contracts.Application;
 using MyApp.Domain.Contracts.DTOs.Window;
-using MyApp.Domain.Entities;
 
 namespace MyApp.WebAPI.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WindowController : ControllerBase
+    public class WindowController : BaseController
     {
         private readonly IWindowService _windowService;
 

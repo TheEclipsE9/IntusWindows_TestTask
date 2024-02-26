@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApp.Domain.Contracts.Application;
 using MyApp.Domain.Contracts.DTOs.Order;
-using MyApp.Domain.Entities;
 
 namespace MyApp.WebAPI.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class OrderController : ControllerBase
+    public class OrderController : BaseController
     {
         private readonly IOrderService _orderService;
 

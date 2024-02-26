@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyApp.Application.Services;
 using MyApp.Domain.Contracts.Application;
 using MyApp.Domain.Contracts.DTOs.SubElement;
-using MyApp.Domain.Entities;
 
 namespace MyApp.WebAPI.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class SubElementController : ControllerBase
+    public class SubElementController : BaseController
     {
         private readonly ISubElementService _subElementService;
 
