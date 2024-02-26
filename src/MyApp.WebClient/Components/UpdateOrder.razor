@@ -1,6 +1,5 @@
-﻿@inject HttpClient _httpClient
+﻿
 
-<!---->
 
 <div class="modal fade show d-block bg-black-l" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -36,12 +35,13 @@
 @code {
     [Parameter]
     public OrderDTO Order { get; set; }
-
     [Parameter]
     public EventCallback OnClickButtonClose { get; set; }
+    
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] private APIEndpoints APIEndpoints { get; set; }
 
     private UpdateOrderDTO _updateOrderDTO;
-    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     protected override void OnInitialized()
     {
@@ -54,7 +54,6 @@
 
     private async Task UpdateOrderAsync()
     {
-        Console.WriteLine($"UpdateOrderAsync: {_updateOrderDTO.Name}; {_updateOrderDTO.State}");
         var response = await _httpClient.PutAsJsonAsync<UpdateOrderDTO>($"{APIEndpoints.ServerBaseAddress}/Order/{Order.Id}", _updateOrderDTO);
         if (response.IsSuccessStatusCode)
         {
@@ -72,7 +71,7 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed UpdateOrderAsync");
         }
         await OnClickButtonClose.InvokeAsync();
     }

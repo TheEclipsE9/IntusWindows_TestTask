@@ -1,6 +1,5 @@
-﻿@inject HttpClient _httpClient
+﻿
 
-<!---->
 
 <div class="modal fade show d-block bg-black-l" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -45,26 +44,26 @@
 @code {
     [Parameter]
     public SubElementDTO SubElement { get; set; }
-
     [Parameter]
     public EventCallback OnClickButtonClose { get; set; }
 
-    private UpdateSubElementDTO _updateSubElementDTO;
+    [Inject] private HttpClient _httpClient { get; set; }
     [Inject] APIEndpoints APIEndpoints { get; set; }
+
+    private UpdateSubElementDTO _updateSubElementDTO;
 
     protected override void OnInitialized()
     {
         _updateSubElementDTO = new UpdateSubElementDTO()
-            {
-                Type = SubElement.Type,
-                Width = SubElement.Width,
-                Height = SubElement.Height
-            };
+        {
+            Type = SubElement.Type,
+            Width = SubElement.Width,
+            Height = SubElement.Height
+        };
     }
 
     private async Task UpdateSubElementAsync()
     {
-        Console.WriteLine($"UpdateWindowAsync: {_updateSubElementDTO.Type}; {_updateSubElementDTO.Width}; {_updateSubElementDTO.Height}");
         var response = await _httpClient.PutAsJsonAsync<UpdateSubElementDTO>($"{APIEndpoints.ServerBaseAddress}/SubElement/{SubElement.Id}", _updateSubElementDTO);
         if (response.IsSuccessStatusCode)
         {
@@ -83,7 +82,7 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed UpdateSubElementAsync");
         }
         await OnClickButtonClose.InvokeAsync();
     }

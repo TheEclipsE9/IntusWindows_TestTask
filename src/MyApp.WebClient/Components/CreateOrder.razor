@@ -1,6 +1,5 @@
-﻿@inject HttpClient _httpClient
+﻿
 
-<!---->
 
 <div class="modal fade show d-block bg-black-l" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -34,23 +33,28 @@
 
 
 @code {
-
     [Parameter]
     public EventCallback OnClickButtonClose { get; set; }
     [Parameter]
     public EventCallback<OrderDTO> OnOrderCreated { get; set; }
-    [Inject] APIEndpoints APIEndpoints { get; set; }
+    
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] private APIEndpoints _apiEndpoints { get; set; }
 
-    private CreateOrderDTO _createOrderDTO = new CreateOrderDTO()
+    private CreateOrderDTO _createOrderDTO;
+
+    protected override void OnInitialized()
     {
-        Name = "",
-        State = ""
-    };
+        _createOrderDTO = new CreateOrderDTO()
+        {
+            Name = "",
+            State = ""
+        };
+    }
 
     private async Task CreateOrderAsync()
     {
-        Console.WriteLine($"CreateOrderAsync: {_createOrderDTO.Name}; {_createOrderDTO.State}");
-        var response = await _httpClient.PostAsJsonAsync<CreateOrderDTO>($"{APIEndpoints.ServerBaseAddress}/Order", _createOrderDTO);
+        var response = await _httpClient.PostAsJsonAsync<CreateOrderDTO>($"{_apiEndpoints.ServerBaseAddress}/Order", _createOrderDTO);
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<OrderDTO>();
@@ -66,7 +70,7 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed CreateOrderAsync");
         }
         await OnClickButtonClose.InvokeAsync();
     }

@@ -1,6 +1,5 @@
-﻿@inject HttpClient _httpClient
+﻿
 
-<!---->
 
 <div class="modal fade show d-block bg-black-l" id="staticBackdrop" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -36,12 +35,13 @@
 @code {
     [Parameter]
     public WindowDTO Window { get; set; }
-
     [Parameter]
     public EventCallback OnClickButtonClose { get; set; }
 
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] APIEndpoints _apiEndpoints { get; set; }
+
     private UpdateWindowDTO _updateWindowDTO;
-    [Inject] APIEndpoints APIEndpoints { get; set; }
 
     protected override void OnInitialized()
     {
@@ -54,8 +54,7 @@
 
     private async Task UpdateWindowAsync()
     {
-        Console.WriteLine($"UpdateWindowAsync: {_updateWindowDTO.Name}; {_updateWindowDTO.Quantity}");
-        var response = await _httpClient.PutAsJsonAsync<UpdateWindowDTO>($"{APIEndpoints.ServerBaseAddress}/Window/{Window.Id}", _updateWindowDTO);
+        var response = await _httpClient.PutAsJsonAsync<UpdateWindowDTO>($"{_apiEndpoints.ServerBaseAddress}/Window/{Window.Id}", _updateWindowDTO);
         if (response.IsSuccessStatusCode)
         {
             var updated = await response.Content.ReadFromJsonAsync<WindowDTO>();
@@ -72,7 +71,7 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed UpdateWindowAsync");
         }
         await OnClickButtonClose.InvokeAsync();
     }

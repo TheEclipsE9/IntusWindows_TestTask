@@ -1,6 +1,5 @@
-﻿@inject HttpClient _httpClient
+﻿
 
-<!---->
 
 <div class="modal fade show d-block bg-black-l" id="staticBackdrop bg-black-l" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -39,10 +38,11 @@
     public EventCallback OnClickButtonClose { get; set; }
     [Parameter]
     public EventCallback<WindowDTO> OnWindowCreated { get; set; }
-    [Inject] APIEndpoints APIEndpoints { get; set; }
+    
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] private APIEndpoints _apiEndpoints { get; set; }
 
     private CreateWindowDTO _createWindowDTO;
-    
 
     protected override void OnInitialized()
     {
@@ -57,7 +57,7 @@
     private async Task CreateWindowAsync()
     {
         Console.WriteLine($"CreateOrderAsync: {_createWindowDTO.Name}; {_createWindowDTO.Quantity}");
-        var response = await _httpClient.PostAsJsonAsync<CreateWindowDTO>($"{APIEndpoints.ServerBaseAddress}/Window", _createWindowDTO);
+        var response = await _httpClient.PostAsJsonAsync<CreateWindowDTO>($"{_apiEndpoints.ServerBaseAddress}/Window", _createWindowDTO);
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<WindowDTO>();

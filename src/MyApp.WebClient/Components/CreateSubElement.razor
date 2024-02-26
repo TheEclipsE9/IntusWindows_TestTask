@@ -1,6 +1,5 @@
-﻿@inject HttpClient _httpClient
+﻿
 
-<!---->
 
 <div class="modal fade show d-block bg-black-l" id="staticBackdrop bg-black-l" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -48,25 +47,26 @@
     public EventCallback OnClickButtonClose { get; set; }
     [Parameter]
     public EventCallback<SubElementDTO> OnSubElementCreated { get; set; }
-    [Inject] APIEndpoints APIEndpoints { get; set; }
+
+    [Inject] private HttpClient _httpClient { get; set; }
+    [Inject] private APIEndpoints _apiEndpoints { get; set; }
 
     private CreateSubElementDTO _createSubElementDTO;
 
     protected override void OnInitialized()
     {
         _createSubElementDTO = new CreateSubElementDTO()
-            {
-                Type = SubElementType.Doors,
-                Width = 0,
-                Height = 0,
-                WindowId = WindowId
-            };
+        {
+            Type = SubElementType.Doors,
+            Width = 0,
+            Height = 0,
+            WindowId = WindowId
+        };
     }
 
     private async Task CreateSubElementAsync()
     {
-        Console.WriteLine($"CreateOrderAsync: {_createSubElementDTO.Type}; {_createSubElementDTO.Width}; {_createSubElementDTO.Height}");
-        var response = await _httpClient.PostAsJsonAsync<CreateSubElementDTO>($"{APIEndpoints.ServerBaseAddress}/SubElement", _createSubElementDTO);
+        var response = await _httpClient.PostAsJsonAsync<CreateSubElementDTO>($"{_apiEndpoints.ServerBaseAddress}/SubElement", _createSubElementDTO);
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<SubElementDTO>();
@@ -82,7 +82,7 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed CreateSubElementAsync");
         }
         await OnClickButtonClose.InvokeAsync();
     }
