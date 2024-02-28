@@ -1,16 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApp.Domain.Contracts.Application;
 using MyApp.Domain.Contracts.DTOs.SubElement;
+using MyApp.Domain.Contracts.Infrastructure;
 
 namespace MyApp.WebAPI.Controllers
 {
     public class SubElementController : BaseController
     {
         private readonly ISubElementService _subElementService;
+        private readonly IAppDbContext _dbContext;
 
-        public SubElementController(ISubElementService subElementService)
+        public SubElementController(
+            ISubElementService subElementService, 
+            IAppDbContext dbContext)
         {
             _subElementService = subElementService;
+            _dbContext = dbContext;
         }
 
         [HttpGet("{id}")]
@@ -52,6 +57,17 @@ namespace MyApp.WebAPI.Controllers
             _subElementService.Delete(id);
 
             return Ok();
+        }
+
+        [HttpGet("unique")]
+        public IActionResult GetUnique()
+        {
+            var unique = _dbContext.SubElements.ToList();
+
+            var res = unique.DistinctBy(x => new { x.Width, x.Height, x.Type });
+            //for{for{}}
+
+            return Ok(res);
         }
     }
 }
